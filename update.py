@@ -70,15 +70,15 @@ def walk_collections(node):
 def walk_results(flickr, method, **kwargs):
     count = 0
     page = 1
+    pages = 1
     kwargs['per_page'] = 100
-    while True:
+    while page <= pages:
         kwargs['page'] = page
         results = call_flickr(flickr, method, **kwargs)
         main = list(results)[0]
         for item in main:
             yield item
-        if main.attrib['pages'] >= page:
-            return
+        pages = int(main.attrib['pages'])
         page = page + 1
 
 LOGLOCK = Lock()
