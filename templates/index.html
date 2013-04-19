@@ -8,7 +8,7 @@
       <div class="container">
         <a class="brand" href="#">Flickr Stats</a>
 
-        <p class="navbar-text pull-right">
+        <p class="navbar-text pull-right navbar-persona">
           {% if user.is_authenticated %}
             {% browserid_logout link_class="persona-button" text="<span>Sign out</span>" %}
           {% else %}
