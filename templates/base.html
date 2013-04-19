@@ -1,0 +1,22 @@
+{% load browserid %}
+<!DOCTYPE HTML>
+
+<html lang="en">
+<head>
+  <title>{% block title %}Flickr Stats{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.no-icons.min.css">
+  <link rel="stylesheet" href="{{ STATIC_URL }}styles/layout.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css">
+  <link rel="stylesheet" href="{{ STATIC_URL }}styles/persona-buttons.css">
+</head>
+<body>
+  {% browserid_info %}
+
+{% block body %}{% endblock %}
+
+  <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+  {% browserid_js %}
+</body>
+</html>
