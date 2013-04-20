@@ -12,6 +12,25 @@
 </head>
 <body>
   {% browserid_info %}
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container">
+        {% if user.is_authenticated %}
+          <p class="navbar-text pull-right navbar-persona">
+            {% browserid_logout link_class="persona-button" text="<span>Sign out</span>" %}
+          </p>
+          <p class="navbar-text">
+            {{ account.username }}
+          </p>
+        {% else %}
+          <p class="navbar-text pull-right navbar-persona">
+            {% browserid_login link_class="persona-button" text="<span>Sign in</span>" %}
+          </p>
+          <a class="brand" href="#">Flickr Stats</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 
 {% block body %}{% endblock %}
 
