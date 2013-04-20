@@ -1,4 +1,5 @@
 {% load browserid %}
+{% load flickr %}
 <!DOCTYPE HTML>
 
 <html lang="en">
@@ -19,9 +20,10 @@
           <p class="navbar-text pull-right navbar-persona">
             {% browserid_logout link_class="persona-button" text="<span>Sign out</span>" %}
           </p>
-          <p class="navbar-text">
-            {{ account.username }}
-          </p>
+          <a class="brand" href="http://flickr.com/photos/{{ account.nsid }}">{{ account.username }}</a>
+          <ul class="nav">
+            <li class="{% ifurl 'index' %}active{% endifurl %}"><a href="{% url 'index' %}">Dashboard</a></li>
+          </ul>
         {% else %}
           <p class="navbar-text pull-right navbar-persona">
             {% browserid_login link_class="persona-button" text="<span>Sign in</span>" %}

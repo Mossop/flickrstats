@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <div class="container">
+    <div><img src="{{ STATIC_URL }}images/banner.jpg"></div>
+    <h1>Connect to your Flickr account</h1>
+    <p>Oops, we can't seem to access your Flickr account anymore. We can't
+      update your stats until you give us <a href="{{ link }}">access to your account</a>.</p>
+    <p>We'll keep your stats for around 30 days but if you don't reconnect
+      before then we'll delete them to make room for other people.</p>
+  </div>
+{% endblock %}

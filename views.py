@@ -24,7 +24,7 @@ def index(request):
                 context = {
                     "link": flickr.web_login_url("read")
                 }
-                return render(request, "connect.html", context)
+                return render(request, "reconnect.html", context)
         else:
             flickr = flickrapi.FlickrAPI(FLICKR['key'], FLICKR['secret'],
                                          store_token = False)
