@@ -5,7 +5,7 @@ import flickrapi
 from flickrstats.keys import FLICKR
 
 from website.models import *
-from website.shared import *
+from website.shared import with_account, get_date_range, to_epoch
 
 def index(request):
     if request.user.is_authenticated():
@@ -15,7 +15,8 @@ def index(request):
 @with_account
 def dashboard(request, account):
     context = {
-        "account": account
+        "account": account,
+        "daterange": get_date_range(request)
     }
     return render(request, "dashboard.html", context)
 

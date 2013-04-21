@@ -1,9 +1,14 @@
 from django.shortcuts import redirect
 
+from datetime import datetime, date, timedelta
+
 import flickrapi
 from flickrstats.keys import FLICKR
 
 from website.models import *
+
+def to_epoch(source):
+    return int((source - date(1970, 1, 1)).total_seconds()) * 1000
 
 def get_account(request):
     try:
@@ -16,14 +21,24 @@ def get_account(request):
         return accounts[0]
     return None
 
+def get_date_range(request):
+    if "range" in request.session:
+        return request.session["range"]
+
+    now = datetime.utcnow()
+    lastday = date(now.year, now.month, now.day) - timedelta(1)
+    firstday = lastday - timedelta(30)
+
+    range = (firstday, lastday)
+    request.session["range"] = range
+    return range
+
 def get_flickr(account):
     return flickrapi.FlickrAPI(FLICKR['key'], FLICKR['secret'],
                                token = account.token, store_token = False)
 
 def with_account(fn):
-    def wrapped(*args, **kwargs):
-        request = args[0]
-
+    def wrapped(request, *args, **kwargs):
         if not request.user.is_authenticated():
             return redirect("index")
 
@@ -41,7 +56,6 @@ def with_account(fn):
             except:
                 return redirect("reconnect")
 
-        kwargs["account"] = account
-        return fn(*args, **kwargs)
+        return fn(request, account, *args, **kwargs)
 
     return wrapped
