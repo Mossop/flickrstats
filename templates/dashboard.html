@@ -1,12 +1,37 @@
 {% extends "graph.html" %}
 
+{% block head %}
+<style>
+#chart-container {
+  margin-top: 10px;
+  position: relative
+}
+
+#yaxis {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px
+}
+
+#chart {
+  height: 500px;
+  margin-left: 40px
+}
+
+#timeline {
+  margin-left: 40px;
+}
+</style>
+{% endblock %}
+
 {% block body %}
   <div class="container">
     <p class="text-right">{{ daterange.0 }} - {{ daterange.1 }}</p>
-    <div style="margin-top: 10px; position: relative">
-      <div id="yaxis" style="position: absolute; top: 0; bottom: 0; width: 40px"></div>
-      <div id="chart" class="loading" style="height: 500px; margin-left: 40px"></div>
-      <div id="timeline" style="margin-left: 40px"></div>
+    <div id="chart-container">
+      <div id="yaxis"></div>
+      <div id="chart" class="loading"></div>
+      <div id="timeline"></div>
     </div>
   </div>
 {% endblock %}
@@ -14,20 +39,22 @@
 {% block script %}
 <script>
   $.getJSON("{% url 'visits' %}", function(data) {
+    var palette = new Rickshaw.Color.Palette();
+
     var visits = {
       photo: {
         name: "Photos",
-        color: "lightblue",
+        color: palette.color(),
         data: []
       },
       photoset: {
         name: "Sets",
-        color: "red",
+        color: palette.color(),
         data: []
       },
       photostream: {
         name: "Photostream",
-        color: "lightgreen",
+        color: palette.color(),
         data: []
       }
     };
@@ -48,7 +75,10 @@
       series: [visits.photostream, visits.photoset, visits.photo]
     });
 
-    var x_axis = new Rickshaw.Graph.Axis.Time({ graph: graph });
+    var x_axis = new Rickshaw.Graph.Axis.Time({
+      graph: graph,
+      ticksTreatment: "glow"
+    });
 
     var y_axis = new Rickshaw.Graph.Axis.Y({
       graph: graph,
