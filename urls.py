@@ -5,7 +5,15 @@ from website import json
 
 urlpatterns = patterns('',
     url(r'^$', views.index, name='index'),
+
+    # Authenticated pages
+    url(r'^dashboard$', views.dashboard, name='dashboard'),
+
+    # Flickr authentication
+    url(r'^connect$', views.connect, name='connect'),
+    url(r'^reconnect$', views.reconnect, name='reconnect'),
     url(r'^external/frob$', views.frob),
 
-    url(r'^json/visits$', json.visits, name='visits')
+    # JSON data
+    url(r'^json/visits$', json.visits, name='visits'),
 )

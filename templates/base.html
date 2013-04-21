@@ -24,7 +24,7 @@
           </p>
           <a class="brand" href="http://flickr.com/photos/{{ account.nsid }}">{{ account.username }}</a>
           <ul class="nav">
-            <li{% ifurl 'index' %} class="active"{% endifurl %}><a href="{% url 'index' %}">Dashboard</a></li>
+            <li{% ifurl 'dashboard' %} class="active"{% endifurl %}><a href="{% url 'dashboard' %}">Dashboard</a></li>
           </ul>
         {% else %}
           <p class="navbar-text pull-right navbar-persona">

@@ -7,7 +7,7 @@ from django.db.models import Sum
 import datetime
 
 from website.models import *
-from website.views import get_account
+from website.shared import *
 
 def jsonify(data):
     return HttpResponse(simplejson.dumps(data), mimetype='application/json')
@@ -21,10 +21,8 @@ def build_visits(account, typename):
     visits = Date.objects.filter(thing__account = account).exclude(**kwargs).values("date").annotate(visits = Sum("visits"))
     return [{ "date": toepoch(v["date"]), "visits": v["visits"]} for v in visits]
 
-@login_required
-def visits(request):
-    account = get_account(request)
-
+@with_account
+def visits(request, account):
     visits = Date.objects.filter(thing__account = account).values("date").annotate(visits = Sum("visits"))
     data = {
       "photostream": build_visits(account, "photostream"),
