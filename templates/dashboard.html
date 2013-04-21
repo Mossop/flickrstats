@@ -19,18 +19,34 @@
     dataURL: "{% url 'visits' %}",
 
     series: [{
-      key: "visits",
-      name: "Visits",
+      key: "photostream",
+      name: "Photostream",
       color: "lightblue"
+    }, {
+      key: "photosets",
+      name: "Sets",
+      color: "lightred"
+    }, {
+      key: "photos",
+      name: "Photos",
+      color: "lightgreen"
     }],
 
     onData: function(data) {
-      return [{
-        key: "visits",
-        data: data.visits.map(function (d) {
-          return { x: d.date / 1000, y: d.visits };
-        })
-      }]
+      function buildData(type) {
+        return {
+          key: type,
+          data: data[type].map(function (d) {
+            return { x: d.date / 1000, y: d.visits };
+          })
+        }
+      }
+
+      return [
+        buildData("photostream"),
+        buildData("photos"),
+        buildData("photosets"),
+      ]
     },
 
     onComplete: function(transport) {
@@ -51,7 +67,7 @@
         graph: graph,
         xFormatter: function(x) {
           var date = new Date(x * 1000);
-          return date.toDateString();
+          return date.toUTCString();
         },
         yFormatter: function(y) {
           return parseInt(y);

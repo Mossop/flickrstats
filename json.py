@@ -15,12 +15,20 @@ def jsonify(data):
 def toepoch(date):
     return int((date - datetime.date(1970, 1, 1)).total_seconds()) * 1000
 
+def build_visits(account, typename):
+    kwargs = {}
+    kwargs["thing__" + typename] = None
+    visits = Date.objects.filter(thing__account = account).exclude(**kwargs).values("date").annotate(visits = Sum("visits"))
+    return [{ "date": toepoch(v["date"]), "visits": v["visits"]} for v in visits]
+
 @login_required
 def visits(request):
     account = get_account(request)
 
     visits = Date.objects.filter(thing__account = account).values("date").annotate(visits = Sum("visits"))
     data = {
-      "visits": [{ "date": toepoch(v["date"]), "visits": v["visits"]} for v in visits]
+      "photostream": build_visits(account, "photostream"),
+      "photos": build_visits(account, "photo"),
+      "photosets": build_visits(account, "photoset")
     }
     return jsonify(data)
