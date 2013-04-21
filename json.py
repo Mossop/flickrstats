@@ -27,9 +27,30 @@ def build_visits(account, range, typename):
 def visits(request, account):
     range = get_date_range(request)
 
-    data = {
-      "photostream": build_visits(account, range, "photostream"),
-      "photos": build_visits(account, range, "photo"),
-      "photosets": build_visits(account, range, "photoset")
+    filter = {
+        "thing__account": account,
+        "date__gte": range[0],
+        "date__lte": range[1],
     }
+
+    dates = dict()
+    data = []
+
+    visits = Date.objects.filter(**filter).values("date", "thing__type") \
+                 .annotate(visits = Sum("visits"), comments = Sum("comments"), favourites = Sum("favourites"))
+    for visit in visits:
+        if visit["date"] in dates:
+            date = dates[visit["date"]]
+        else:
+            date = {
+                "date": to_epoch(visit["date"]),
+                "comments": 0,
+                "favourites": 0,
+            }
+            dates[visit["date"]] = date
+            data.append(date)
+        date[visit["thing__type"].lower()] = visit["visits"]
+        date["comments"] = date["comments"] + visit["comments"]
+        date["favourites"] = date["favourites"] + visit["favourites"]
+
     return jsonify(data)

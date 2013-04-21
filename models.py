@@ -24,6 +24,7 @@ class Account(models.Model):
 class Thing(models.Model):
     account = models.ForeignKey(Account)
     created = models.DateTimeField()
+    type = models.CharField(max_length = 15)
 
 class PhotoStream(Thing):
     def __unicode__(self):

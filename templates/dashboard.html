@@ -6,75 +6,70 @@
     <div style="margin-top: 10px; position: relative">
       <div id="yaxis" style="position: absolute; top: 0; bottom: 0; width: 40px"></div>
       <div id="chart" class="loading" style="height: 500px; margin-left: 40px"></div>
+      <div id="timeline" style="margin-left: 40px"></div>
     </div>
   </div>
 {% endblock %}
 
 {% block script %}
 <script>
-  new Rickshaw.Graph.Ajax({
-    element: document.querySelector("#chart"),
-    renderer: "area",
-    stroke: true,
-
-    dataURL: "{% url 'visits' %}",
-
-    series: [{
-      key: "photostream",
-      name: "Photostream",
-      color: "lightblue"
-    }, {
-      key: "photosets",
-      name: "Sets",
-      color: "lightred"
-    }, {
-      key: "photos",
-      name: "Photos",
-      color: "lightgreen"
-    }],
-
-    onData: function(data) {
-      function buildData(type) {
-        return {
-          key: type,
-          data: data[type].map(function (d) {
-            return { x: d.date / 1000, y: d.visits };
-          })
-        }
+  $.getJSON("{% url 'visits' %}", function(data) {
+    var visits = {
+      photo: {
+        name: "Photos",
+        color: "lightblue",
+        data: []
+      },
+      photoset: {
+        name: "Sets",
+        color: "red",
+        data: []
+      },
+      photostream: {
+        name: "Photostream",
+        color: "lightgreen",
+        data: []
       }
+    };
 
-      return [
-        buildData("photostream"),
-        buildData("photos"),
-        buildData("photosets"),
-      ]
-    },
+    data.forEach(function(date) {
+      var epoch = date.date / 1000;
+      for (var key in visits)
+        visits[key].data.push({ x: epoch, y: date[key] });
+    });
 
-    onComplete: function(transport) {
-      document.querySelector("#chart").classList.remove("loading");
+    var chart = document.getElementById("chart");
 
-      var graph = transport.graph;
-      var x_axis = new Rickshaw.Graph.Axis.Time({ graph: graph });
-      x_axis.render();
+    var graph = new Rickshaw.Graph({
+      element: chart,
+      renderer: "area",
+      stroke: true,
 
-      var y_axis = new Rickshaw.Graph.Axis.Y({
-        graph: graph,
-        orientation: 'left',
-        element: document.getElementById('yaxis'),
-      });
-      y_axis.render();
+      series: [visits.photostream, visits.photoset, visits.photo]
+    });
 
-      new Rickshaw.Graph.HoverDetail({
-        graph: graph,
-        xFormatter: function(x) {
-          var date = new Date(x * 1000);
-          return date.toUTCString();
-        },
-        yFormatter: function(y) {
-          return parseInt(y);
-        }
-      });
-    }
+    var x_axis = new Rickshaw.Graph.Axis.Time({ graph: graph });
+
+    var y_axis = new Rickshaw.Graph.Axis.Y({
+      graph: graph,
+      orientation: 'left',
+      element: document.getElementById('yaxis'),
+    });
+
+    new Rickshaw.Graph.HoverDetail({
+      graph: graph,
+      xFormatter: function(x) {
+        var date = new Date(x * 1000);
+        return date.toUTCString();
+      },
+      yFormatter: function(y) {
+        return parseInt(y);
+      }
+    });
+
+    graph.render();
+
+    chart.classList.remove("loading");
   });
 </script>
 {% endblock %}
