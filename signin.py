@@ -3,7 +3,10 @@
 import os
 import sys
 
-root = os.path.dirname(os.path.dirname(os.path.realpath(sys.argv[0])))
+website = os.path.dirname(os.path.realpath(sys.argv[0]))
+if website in sys.path:
+    sys.path.remove(website)
+root = os.path.dirname(website)
 if root not in sys.path:
     sys.path.insert(0, root)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'flickrstats.settings'
