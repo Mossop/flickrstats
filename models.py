@@ -1,6 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+REFERER_TYPES = (
+    ("F", "Flickr"),
+    ("S", "Search"),
+    ("O", "Other"),
+)
+
 class Account(models.Model):
     user = models.ForeignKey(User)
     nsid = models.TextField(unique = True)
@@ -34,6 +40,7 @@ class Collection(Thing):
 
 class Domain(models.Model):
     name = models.TextField(unique = True)
+    type = models.CharField(max_length = 1, choices = REFERER_TYPES)
 
     def __unicode__(self):
         return self.name

@@ -214,7 +214,8 @@ class DateUpdate(object):
         results = walk_results(self.flickr, method, **args)
         for domain in results:
             dbdomain = {
-                'name': domain.attrib['name']
+                'name': domain.attrib['name'],
+                'type': "O"
             }
             self.domains[domain.attrib['name']] = dbdomain
             self.get_referers(thing, dbdomain)
@@ -234,6 +235,8 @@ class DateUpdate(object):
             }
             if 'searchterm' in referer.attrib:
                 dbreferer['searchterm'] = referer.attrib['searchterm']
+                if args['domain']['type'] == "O":
+                    args['domain']['type'] = "S"
             self.referers[referer.attrib['url']] = dbreferer
 
             count = int(referer.attrib['views'])
@@ -263,7 +266,7 @@ class DateUpdate(object):
 
         # domains
         for (name, domain) in self.domains.items():
-            db, created = Domain.objects.get_or_create(**domain)
+            db, created = Domain.objects.get_or_create(name = name, defaults = { 'type': domain['type'] })
             self.domains[name] = db
 
         # referers
