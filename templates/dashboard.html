@@ -67,6 +67,27 @@
       }
     });
 
+    var annotator = new Rickshaw.Graph.Annotate({
+        graph: graph,
+        element: document.getElementById("timeline")
+    });
+
+    data.forEach(function(date) {
+      if (date.comments == 0 && date.favourites == 0)
+        return;
+
+      var epoch = date.date / 1000;
+      var message = ""
+      if (date.comments > 0) {
+        message += date.comments + " comments"
+        if (date.favourites > 0)
+          message += "<br>"
+      }
+      if (date.favourites > 0)
+        message += date.favourites + " favourites"
+      annotator.add(epoch, message)
+    });
+
     graph.render();
 
     chart.classList.remove("loading");
