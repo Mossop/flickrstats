@@ -47,7 +47,7 @@ class Referer(models.Model):
         return self.url
 
 class Visit(models.Model):
-    thing = models.ForeignKey(Thing)
+    thing = models.ForeignKey(Thing, related_name = "visits")
     referer = models.ForeignKey(Referer)
     date = models.DateField()
     count = models.PositiveIntegerField(default = 0)
@@ -56,7 +56,7 @@ class Visit(models.Model):
         unique_together = ("thing", "referer", "date")
 
 class Date(models.Model):
-    thing = models.ForeignKey(Thing)
+    thing = models.ForeignKey(Thing, related_name = "dates")
     date = models.DateField()
     visits = models.PositiveIntegerField(default = 0)
     comments = models.PositiveIntegerField(default = 0)

@@ -1,6 +1,63 @@
-{% extends "base.html" %}
+{% extends "graph.html" %}
 
 {% block body %}
   <div class="container">
+    <div style="margin-top: 10px; position: relative">
+      <div id="yaxis" style="position: absolute; top: 0; bottom: 0; width: 40px"></div>
+      <div id="chart" class="loading" style="height: 500px; margin-left: 40px"></div>
+    </div>
   </div>
+{% endblock %}
+
+{% block script %}
+<script>
+  new Rickshaw.Graph.Ajax({
+    element: document.querySelector("#chart"),
+    renderer: "area",
+    stroke: true,
+
+    dataURL: "{% url 'visits' %}",
+
+    series: [{
+      key: "visits",
+      name: "Visits",
+      color: "lightblue"
+    }],
+
+    onData: function(data) {
+      return [{
+        key: "visits",
+        data: data.visits.map(function (d) {
+          return { x: d.date / 1000, y: d.visits };
+        })
+      }]
+    },
+
+    onComplete: function(transport) {
+      document.querySelector("#chart").classList.remove("loading");
+
+      var graph = transport.graph;
+      var x_axis = new Rickshaw.Graph.Axis.Time({ graph: graph });
+      x_axis.render();
+
+      var y_axis = new Rickshaw.Graph.Axis.Y({
+        graph: graph,
+        orientation: 'left',
+        element: document.getElementById('yaxis'),
+      });
+      y_axis.render();
+
+      new Rickshaw.Graph.HoverDetail({
+        graph: graph,
+        xFormatter: function(x) {
+          var date = new Date(x * 1000);
+          return date.toDateString();
+        },
+        yFormatter: function(y) {
+          return parseInt(y);
+        }
+      });
+    }
+  });
+</script>
 {% endblock %}

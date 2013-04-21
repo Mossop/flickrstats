@@ -5,13 +5,23 @@ import flickrapi
 from flickrstats.keys import FLICKR
 from website.models import *
 
+def get_account(request):
+    try:
+        if "account" in request.session:
+            return Account.objects.get(user = request.user, nsid = request.session["account"])
+    except Account.DoesNotExist:
+        pass
+    accounts = Account.objects.filter(user = request.user)
+    if len(accounts):
+        request.session["account"] = accounts[0].nsid
+        return accounts[0]
+    return None
+
 def index(request):
     if request.user.is_authenticated():
-        accounts = Account.objects.filter(user = request.user)
+        account = get_account(request)
 
-        if len(accounts):
-            account = accounts[0]
-
+        if account:
             flickr = flickrapi.FlickrAPI(FLICKR['key'], FLICKR['secret'],
                                          token = account.token, store_token = False)
             try:
@@ -49,5 +59,7 @@ def frob(request):
     account, created = Account.objects.get_or_create(user = request.user, nsid = id, username = username)
     account.token = token
     account.save()
+
+    request.session["account"] = id
 
     return redirect("index")

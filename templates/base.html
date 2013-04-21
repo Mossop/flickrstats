@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="{{ STATIC_URL }}styles/layout.css">
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css">
   <link rel="stylesheet" href="{{ STATIC_URL }}styles/persona-buttons.css">
+{% block style_lib %}{% endblock %}
+{% block head %}{% endblock %}
 </head>
 <body>
   {% browserid_info %}
@@ -22,7 +24,7 @@
           </p>
           <a class="brand" href="http://flickr.com/photos/{{ account.nsid }}">{{ account.username }}</a>
           <ul class="nav">
-            <li class="{% ifurl 'index' %}active{% endifurl %}"><a href="{% url 'index' %}">Dashboard</a></li>
+            <li{% ifurl 'index' %} class="active"{% endifurl %}><a href="{% url 'index' %}">Dashboard</a></li>
           </ul>
         {% else %}
           <p class="navbar-text pull-right navbar-persona">
@@ -39,5 +41,7 @@
   <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
   <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
   {% browserid_js %}
+{% block script_lib %}{% endblock %}
+{% block script %}{% endblock %}
 </body>
 </html>
