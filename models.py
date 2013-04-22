@@ -26,6 +26,10 @@ class Thing(models.Model):
     created = models.DateTimeField()
     type = models.CharField(max_length = 15)
 
+    def __init__(self, *args, **kwargs):
+        kwargs["type"] = self.__class__.__name__
+        models.Model.__init__(self, *args, **kwargs)
+
 class PhotoStream(Thing):
     def __unicode__(self):
         return "%s's photostream" % self.account

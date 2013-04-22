@@ -235,8 +235,8 @@ class DateUpdate(object):
             }
             if 'searchterm' in referer.attrib:
                 dbreferer['searchterm'] = referer.attrib['searchterm']
-                if args['domain']['type'] == "O":
-                    args['domain']['type'] = "S"
+                if domain['type'] == "O":
+                    domain['type'] = "S"
             self.referers[referer.attrib['url']] = dbreferer
 
             count = int(referer.attrib['views'])
