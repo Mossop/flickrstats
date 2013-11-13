@@ -5,7 +5,7 @@ import flickrapi
 from flickrstats.keys import FLICKR
 
 from website.models import *
-from website.shared import with_account, get_date_range, to_epoch
+from website.shared import with_account, get_date_range
 
 def index(request):
     if request.user.is_authenticated():

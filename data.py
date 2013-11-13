@@ -1,6 +1,7 @@
+import json
+
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.utils import simplejson
 from django.http import HttpResponse
 from django.db.models import Sum
 
@@ -8,7 +9,7 @@ from website.models import *
 from website.shared import with_account, get_date_range, to_epoch
 
 def jsonify(data):
-    return HttpResponse(simplejson.dumps(data), mimetype='application/json')
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 def build_visits(account, range, typename):
     filter = {

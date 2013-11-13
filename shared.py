@@ -8,7 +8,11 @@ from flickrstats.keys import FLICKR
 from website.models import *
 
 def to_epoch(source):
-    return int((source - date(1970, 1, 1)).total_seconds()) * 1000
+    epoch = date(1970, 1, 1)
+    return int((source - epoch).total_seconds()) * 1000
+
+def from_epoch(epoch):
+    return datetime.utcfromtimestamp(epoch / 1000).date
 
 def get_account(request):
     try:
@@ -23,13 +27,14 @@ def get_account(request):
 
 def get_date_range(request):
     if "range" in request.session:
-        return request.session["range"]
+        range = request.session["range"]
+        return (from_epoch(range[0]), from_epoch(range[1]))
 
     now = datetime.utcnow()
     lastday = date(now.year, now.month, now.day) - timedelta(1)
     firstday = lastday - timedelta(30)
 
-    range = (firstday, lastday)
+    range = (to_epoch(firstday), to_epoch(lastday))
     request.session["range"] = range
     return range
 
