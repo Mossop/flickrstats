@@ -9,10 +9,10 @@ from website.models import *
 
 def to_epoch(source):
     epoch = date(1970, 1, 1)
-    return int((source - epoch).total_seconds()) * 1000
+    return int((source - epoch).total_seconds())
 
 def from_epoch(epoch):
-    return datetime.utcfromtimestamp(epoch / 1000).date
+    return datetime.utcfromtimestamp(epoch).date
 
 def get_account(request):
     try:

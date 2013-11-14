@@ -47,12 +47,12 @@
         'Last Month': [moment().subtract('month', 1), moment()],
         'Last Year': [moment().subtract('year', 1), moment()]
       },
-      startDate: new Date({{ daterange.0|date:"U" }}000),
-      endDate: new Date({{ daterange.1|date:"U" }}000)
+      startDate: moment.unix({{ daterange.0|date:"U" }}),
+      endDate: moment.unix({{ daterange.1|date:"U" }})
     },
     function(start, end) {
       $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
-      updateGraph(start.toDate(), end.toDate());
+      updateGraph(start, end);
     }
   );
 
@@ -68,13 +68,13 @@
       url += "?"
 
     if (minDate)
-      url += "mindate=" + minDate.getTime();
+      url += "mindate=" + minDate.unix();
 
     if (minDate && maxDate)
       url += "&";
 
     if (maxDate)
-      url += "maxdate=" + maxDate.getTime();
+      url += "maxdate=" + maxDate.unix();
 
     $.getJSON(url, function(data) {
       var palette = new Rickshaw.Color.Palette();
@@ -98,7 +98,7 @@
       };
 
       data.forEach(function(date) {
-        var epoch = date.date / 1000;
+        var epoch = date.date;
         for (var key in visits)
           visits[key].data.push({ x: epoch, y: date[key] });
       });
@@ -142,7 +142,7 @@
         if (date.comments == 0 && date.favourites == 0)
           return;
 
-        var epoch = date.date / 1000;
+        var epoch = date.date;
         var message = ""
         if (date.comments > 0) {
           message += date.comments + " comments"
