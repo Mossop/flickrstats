@@ -26,6 +26,11 @@ def get_account(request):
     return None
 
 def get_date_range(request):
+    if "mindate" in request.GET and "maxdate" in request.GET:
+        range = (int(request.GET["mindate"]), int(request.GET["maxdate"]))
+        request.session["range"] = range
+        return (from_epoch(range[0]), from_epoch(range[1]))
+
     if "range" in request.session:
         range = request.session["range"]
         return (from_epoch(range[0]), from_epoch(range[1]))

@@ -7,6 +7,8 @@
   <title>{% block title %}Flickr Stats{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.2/css/font-awesome.min.css">
+  <link rel="stylesheet" href="{{ STATIC_URL }}daterangepicker/daterangepicker-bs3.css">
   <link rel="stylesheet" href="{{ STATIC_URL }}styles/layout.css">
   <link rel="stylesheet" href="{{ STATIC_URL }}styles/persona-buttons.css">
 {% block style_lib %}{% endblock %}
@@ -39,7 +41,9 @@
 
 {% block body %}{% endblock %}
 
-  <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.4.0/moment.min.js"></script>
+  <script src="{{ STATIC_URL }}daterangepicker/daterangepicker.js"></script>
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
   {% browserid_js %}
 {% block script_lib %}{% endblock %}

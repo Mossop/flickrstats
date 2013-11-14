@@ -27,8 +27,11 @@
 
 {% block body %}
   <div class="container">
-    <p class="text-right">{{ daterange.0 }} - {{ daterange.1 }}</p>
-    <div id="chart-container">
+    <div id="reportrange" class="pull-right">
+      <i class="fa fa-calendar fa-lg"></i>
+      <span>{{ daterange.0 }} - {{ daterange.1 }}</span> <b class="caret"></b>
+    </div>
+    <div id="chart-container" style="clear: both; padding-top: 10px">
       <div id="yaxis"></div>
       <div id="chart" class="loading"></div>
       <div id="timeline"></div>
@@ -38,89 +41,125 @@
 
 {% block script %}
 <script>
-  $.getJSON("{% url 'visits' %}", function(data) {
-    var palette = new Rickshaw.Color.Palette();
-
-    var visits = {
-      photo: {
-        name: "Photos",
-        color: palette.color(),
-        data: []
+  $('#reportrange').daterangepicker({
+      ranges: {
+        'Last Week': [moment().subtract('days', 6), moment()],
+        'Last Month': [moment().subtract('month', 1), moment()],
+        'Last Year': [moment().subtract('year', 1), moment()]
       },
-      photoset: {
-        name: "Sets",
-        color: palette.color(),
-        data: []
-      },
-      photostream: {
-        name: "Photostream",
-        color: palette.color(),
-        data: []
-      }
-    };
+      startDate: new Date({{ daterange.0|date:"U" }}000),
+      endDate: new Date({{ daterange.1|date:"U" }}000)
+    },
+    function(start, end) {
+      $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+      updateGraph(start.toDate(), end.toDate());
+    }
+  );
 
-    data.forEach(function(date) {
-      var epoch = date.date / 1000;
-      for (var key in visits)
-        visits[key].data.push({ x: epoch, y: date[key] });
-    });
-
+  function updateGraph(minDate, maxDate) {
     var chart = document.getElementById("chart");
+    chart.classList.add("loading");
+    chart.innerHTML = "";
+    document.getElementById("yaxis").innerHTML = "";
+    document.getElementById("timeline").innerHTML = "";
 
-    var graph = new Rickshaw.Graph({
-      element: chart,
-      renderer: "area",
-      stroke: true,
+    var url = "{% url 'visits' %}";
+    if (minDate || maxDate)
+      url += "?"
 
-      series: [visits.photostream, visits.photoset, visits.photo]
-    });
+    if (minDate)
+      url += "mindate=" + minDate.getTime();
 
-    var x_axis = new Rickshaw.Graph.Axis.Time({
-      graph: graph,
-      ticksTreatment: "glow"
-    });
+    if (minDate && maxDate)
+      url += "&";
 
-    var y_axis = new Rickshaw.Graph.Axis.Y({
-      graph: graph,
-      orientation: 'left',
-      element: document.getElementById('yaxis'),
-    });
+    if (maxDate)
+      url += "maxdate=" + maxDate.getTime();
 
-    new Rickshaw.Graph.HoverDetail({
-      graph: graph,
-      xFormatter: function(x) {
-        var date = new Date(x * 1000);
-        return date.toUTCString();
-      },
-      yFormatter: function(y) {
-        return parseInt(y);
-      }
-    });
+    $.getJSON(url, function(data) {
+      var palette = new Rickshaw.Color.Palette();
 
-    var annotator = new Rickshaw.Graph.Annotate({
+      var visits = {
+        photo: {
+          name: "Photos",
+          color: palette.color(),
+          data: []
+        },
+        photoset: {
+          name: "Sets",
+          color: palette.color(),
+          data: []
+        },
+        photostream: {
+          name: "Photostream",
+          color: palette.color(),
+          data: []
+        }
+      };
+
+      data.forEach(function(date) {
+        var epoch = date.date / 1000;
+        for (var key in visits)
+          visits[key].data.push({ x: epoch, y: date[key] });
+      });
+
+      var graph = new Rickshaw.Graph({
+        element: chart,
+        renderer: "area",
+        stroke: true,
+
+        series: [visits.photostream, visits.photoset, visits.photo]
+      });
+
+      var x_axis = new Rickshaw.Graph.Axis.Time({
         graph: graph,
-        element: document.getElementById("timeline")
-    });
+        ticksTreatment: "glow"
+      });
 
-    data.forEach(function(date) {
-      if (date.comments == 0 && date.favourites == 0)
-        return;
+      var y_axis = new Rickshaw.Graph.Axis.Y({
+        graph: graph,
+        orientation: 'left',
+        element: document.getElementById('yaxis'),
+      });
 
-      var epoch = date.date / 1000;
-      var message = ""
-      if (date.comments > 0) {
-        message += date.comments + " comments"
+      new Rickshaw.Graph.HoverDetail({
+        graph: graph,
+        xFormatter: function(x) {
+          var date = new Date(x * 1000);
+          return date.toUTCString();
+        },
+        yFormatter: function(y) {
+          return parseInt(y);
+        }
+      });
+
+      var annotator = new Rickshaw.Graph.Annotate({
+          graph: graph,
+          element: document.getElementById("timeline")
+      });
+
+      data.forEach(function(date) {
+        if (date.comments == 0 && date.favourites == 0)
+          return;
+
+        var epoch = date.date / 1000;
+        var message = ""
+        if (date.comments > 0) {
+          message += date.comments + " comments"
+          if (date.favourites > 0)
+            message += "<br>"
+        }
         if (date.favourites > 0)
-          message += "<br>"
-      }
-      if (date.favourites > 0)
-        message += date.favourites + " favourites"
-      annotator.add(epoch, message)
+          message += date.favourites + " favourites"
+        annotator.add(epoch, message)
+      });
+
+      graph.render();
+
+      chart.classList.remove("loading");
     });
+  }
 
-    graph.render();
-
-    chart.classList.remove("loading");
-  });
+  updateGraph();
 </script>
 {% endblock %}
