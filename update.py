@@ -252,7 +252,7 @@ class DateUpdate(object):
         return Photo.objects.get(photo_id = photo_id)
 
     @lockdb
-    @transaction.commit_on_success
+    @transaction.atomic
     def write_data(self):
         # Add any new photos
         for photo in self.photos:
@@ -349,7 +349,7 @@ class AccountUpdate(object):
         self.max_date = max_date
 
     @lockdb
-    @transaction.commit_on_success
+    @transaction.atomic
     def build_lists(self):
         # Build a list of all collections
         self.collections = []
