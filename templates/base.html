@@ -6,40 +6,41 @@
 <head>
   <title>{% block title %}Flickr Stats{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.no-icons.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="{{ STATIC_URL }}styles/layout.css">
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css">
   <link rel="stylesheet" href="{{ STATIC_URL }}styles/persona-buttons.css">
 {% block style_lib %}{% endblock %}
 {% block head %}{% endblock %}
 </head>
 <body>
   {% browserid_info %}
-  <div class="navbar navbar-inverse navbar-fixed-top">
-    <div class="navbar-inner">
-      <div class="container">
-        {% if user.is_authenticated %}
-          <p class="navbar-text pull-right navbar-persona">
-            {% browserid_logout link_class="persona-button" text="<span>Sign out</span>" %}
-          </p>
-          <a class="brand" href="http://flickr.com/photos/{{ account.nsid }}">{{ account.username }}</a>
-          <ul class="nav">
-            <li{% ifurl 'dashboard' %} class="active"{% endifurl %}><a href="{% url 'dashboard' %}">Dashboard</a></li>
-          </ul>
-        {% else %}
-          <p class="navbar-text pull-right navbar-persona">
-            {% browserid_login link_class="persona-button" text="<span>Sign in</span>" %}
-          </p>
-          <a class="brand" href="#">Flickr Stats</a>
-        {% endif %}
-      </div>
+  <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+      {% if user.is_authenticated %}
+        <div class="navbar-header">
+          <a class="navbar-brand" href="http://flickr.com/photos/{{ account.nsid }}">{{ account.username }}</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li{% ifurl 'dashboard' %} class="active"{% endifurl %}><a href="{% url 'dashboard' %}">Dashboard</a></li>
+        </ul>
+        <p class="navbar-persona navbar-right">
+          {% browserid_logout link_class="persona-button" text="<span>Sign out</span>" %}
+        </p>
+      {% else %}
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Flickr Stats</a>
+        </div>
+        <p class="navbar-persona navbar-right">
+          {% browserid_login link_class="persona-button" text="<span>Sign in</span>" %}
+        </p>
+      {% endif %}
     </div>
   </div>
 
 {% block body %}{% endblock %}
 
   <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-  <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
   {% browserid_js %}
 {% block script_lib %}{% endblock %}
 {% block script %}{% endblock %}
