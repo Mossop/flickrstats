@@ -221,6 +221,8 @@ class DateUpdate(object):
             self.get_referers(thing, dbdomain)
 
     def get_referers(self, thing, domain):
+        visits = dict()
+
         args = {
             'date': self.date,
             'domain': domain['name']
@@ -228,23 +230,30 @@ class DateUpdate(object):
         method = build_method('stats_get', 'Referrers', thing, args)
         results = walk_results(self.flickr, method, **args)
         for referer in results:
+            url = referer.attrib['url']
             dbreferer = {
                 'domain': domain['name'],
-                'url': referer.attrib['url'],
+                'url': url,
                 'searchterm': None
             }
             if 'searchterm' in referer.attrib:
                 dbreferer['searchterm'] = referer.attrib['searchterm']
                 if domain['type'] == "O":
                     domain['type'] = "S"
-            self.referers[referer.attrib['url']] = dbreferer
+            self.referers[url] = dbreferer
 
             count = int(referer.attrib['views'])
+            if not url in visits:
+                visits[url] = count
+            else:
+                visits[url] += count
+
+        for url in visits.iterkeys():
             self.visits.append({
                 'thing': thing,
-                'referer': referer.attrib['url'],
+                'referer': url,
                 'date': self.date,
-                'count': count
+                'count': visits[url]
             })
 
     @lockdb

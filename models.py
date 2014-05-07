@@ -37,11 +37,20 @@ class PhotoStream(Thing):
 class Photo(Thing):
     photo_id = models.TextField(unique = True)
 
+    def __unicode__(self):
+        return "Photo %s" % self.photo_id
+
 class PhotoSet(Thing):
     set_id = models.TextField(unique = True)
 
+    def __unicode__(self):
+        return "Set %s" % self.set_id
+
 class Collection(Thing):
     collection_id = models.TextField(unique = True)
+
+    def __unicode__(self):
+        return "Collection %s" % self.collection_id
 
 class Domain(models.Model):
     name = models.TextField(unique = True)
